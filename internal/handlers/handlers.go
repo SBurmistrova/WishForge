@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"WishForge/storage"
+	"WishForge/internal/storage"
 	"encoding/json"
 	"net/http"
 )

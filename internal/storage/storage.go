@@ -1,20 +1,15 @@
 package storage
 
 import (
+	"WishForge/internal/model"
 	"database/sql"
 
 	_ "github.com/denisenkom/go-mssqldb"
 )
 
-type Wish struct {
-	ID        int    `json:"id"`
-	Name      string `json:"name"`
-	Completed bool   `json:"completed"`
-}
-
 var DataBase *sql.DB
 
-func GetWishes() ([]Wish, error) {
+func GetWishes() ([]model.Wish, error) {
 	request := "SELECT ID, name, completed FROM wishes"
 
 	rows, err := DataBase.Query(request)
@@ -22,10 +17,10 @@ func GetWishes() ([]Wish, error) {
 		return nil, err
 	}
 
-	wishes := make([]Wish, 0)
+	wishes := make([]model.Wish, 0)
 
 	for rows.Next() {
-		var wish Wish
+		var wish model.Wish
 
 		err := rows.Scan(&wish.ID, &wish.Name, &wish.Completed)
 		if err != nil {

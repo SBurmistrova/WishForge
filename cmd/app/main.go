@@ -1,8 +1,8 @@
 package main
 
 import (
-	"WishForge/handlers"
-	"WishForge/storage"
+	"WishForge/internal/handlers"
+	"WishForge/internal/storage"
 	"database/sql"
 	"fmt"
 	"net/http"
