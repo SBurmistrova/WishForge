@@ -36,8 +36,15 @@ func HandlerWish(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		err = service.CreateWish(newWish)
+		wish, err := service.CreateWish(newWish)
 
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+
+			return
+		}
+
+		err = json.NewEncoder(w).Encode(wish)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 		}
@@ -74,6 +81,31 @@ func HandlerWishID(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 		}
+
+	case http.MethodPatch:
+		var updateWish model.Wish
+
+		err := json.NewDecoder(r.Body).Decode(&updateWish)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+
+			return
+		}
+
+		updateWish.ID = id
+
+		wish, err := service.UpdateWish(updateWish)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+
+			return
+		}
+
+		err = json.NewEncoder(w).Encode(wish)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+		}
+
 	default:
 		http.Error(w, "Unsupported request type", http.StatusMethodNotAllowed)
 	}

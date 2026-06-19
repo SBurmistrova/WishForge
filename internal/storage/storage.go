@@ -36,21 +36,30 @@ func GetWishes() ([]model.Wish, error) {
 
 	return wishes, nil
 }
-func CreateWish(newWish model.NewWish) error {
+func CreateWish(newWish model.NewWish) (int, error) {
 	dataBase, err := connectDataBase()
 	if err != nil {
-		return err
+		return 0, err
 	}
 	defer dataBase.Close()
 
-	request := "INSERT INTO wishes (title) VALUES (@title)"
+	request := "INSERT INTO wishes (title) OUTPUT INSERTED.id VALUES (@title)"
 
-	_, err = dataBase.Exec(request, sql.Named("title", newWish.Title))
+	rows, err := dataBase.Query(request, sql.Named("title", newWish.Title))
 	if err != nil {
-		return err
+		return 0, err
 	}
 
-	return nil
+	var id int
+
+	for rows.Next() {
+		err := rows.Scan(&id)
+		if err != nil {
+			return 0, err
+		}
+	}
+
+	return id, nil
 }
 func GetWish(id int) (model.Wish, error) {
 	dataBase, err := connectDataBase()
@@ -75,6 +84,27 @@ func GetWish(id int) (model.Wish, error) {
 	}
 
 	return wish, nil
+}
+func UpdateWish(updateWish model.Wish) error {
+	dataBase, err := connectDataBase()
+	if err != nil {
+		return err
+	}
+	defer dataBase.Close()
+
+	request := `UPDATE wishes 
+                SET title = @title, completed = @completed
+                WHERE id = @id`
+
+	_, err = dataBase.Exec(request,
+		sql.Named("title", updateWish.Title),
+		sql.Named("completed", updateWish.Completed),
+		sql.Named("id", updateWish.ID))
+
+	if err != nil {
+		return err
+	}
+	return nil
 }
 func DeleteWish(id int) error {
 	dataBase, err := connectDataBase()

@@ -13,18 +13,18 @@ var ErrorWishNotFound = errors.New("Wish is not found")
 func GetWishes() ([]model.Wish, error) {
 	return storage.GetWishes()
 }
-func CreateWish(newWish model.NewWish) error {
+func CreateWish(newWish model.NewWish) (model.Wish, error) {
 	err := CheckTitle(&newWish.Title)
 	if err != nil {
-		return err
+		return model.Wish{}, err
 	}
 
-	err = storage.CreateWish(newWish)
+	id, err := storage.CreateWish(newWish)
 	if err != nil {
-		return err
+		return model.Wish{}, err
 	}
 
-	return nil
+	return model.Wish{ID: id, Title: newWish.Title, Completed: false}, nil
 }
 func GetWish(id int) (model.Wish, error) {
 	wish, err := storage.GetWish(id)
@@ -37,6 +37,20 @@ func GetWish(id int) (model.Wish, error) {
 	}
 
 	return wish, nil
+}
+func UpdateWish(updateWish model.Wish) (model.Wish, error) {
+	err := CheckTitle(&updateWish.Title)
+	if err != nil {
+		return model.Wish{}, err
+	}
+
+	err = storage.UpdateWish(updateWish)
+	if err != nil {
+		return model.Wish{}, err
+	}
+
+	return model.Wish{ID: updateWish.ID, Title: updateWish.Title, Completed: updateWish.Completed}, nil
+
 }
 func DeleteWish(id int) error {
 	err := storage.DeleteWish(id)
