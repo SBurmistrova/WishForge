@@ -83,12 +83,12 @@ func UpdateStep(updateStep model.Step) (model.Step, error) {
 		return model.Step{}, err
 	}
 
-	step, err := storage.UpdateStep(updateStep)
+	err = storage.UpdateStep(updateStep)
 	if err != nil {
 		return model.Step{}, err
 	}
 
-	return step, nil
+	return updateStep, nil
 }
 func DeleteStep(idWish int, idStep int) error {
 	err := storage.DeleteStep(idWish, idStep)

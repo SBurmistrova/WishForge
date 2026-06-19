@@ -189,10 +189,10 @@ func CreateStep(newStep model.NewStep) (model.Step, error) {
 
 	return model.Step{IDWish: newStep.IDWish, ID: id, Title: newStep.Title, Completed: false}, nil
 }
-func UpdateStep(updateStep model.Step) (model.Step, error) {
+func UpdateStep(updateStep model.Step) error {
 	dataBase, err := connectDataBase()
 	if err != nil {
-		return model.Step{}, err
+		return err
 	}
 	defer dataBase.Close()
 
@@ -207,9 +207,9 @@ func UpdateStep(updateStep model.Step) (model.Step, error) {
 		sql.Named("id", updateStep.ID))
 
 	if err != nil {
-		return model.Step{}, err
+		return err
 	}
-	return updateStep, nil
+	return nil
 }
 func DeleteStep(idWish int, idStep int) error {
 	dataBase, err := connectDataBase()
