@@ -83,7 +83,8 @@ func DeleteWish(id int) error {
 	}
 	defer dataBase.Close()
 
-	request := "DELETE FROM wishes WHERE id = @id"
+	request := `DELETE FROM steps WHERE id_wish = @id
+	            DELETE FROM wishes WHERE id = @id`
 
 	_, err = dataBase.Exec(request, sql.Named("id", id))
 	if err != nil {
