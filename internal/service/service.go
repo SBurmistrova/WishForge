@@ -54,3 +54,50 @@ func CheckNewWish(newWish *model.NewWish) error {
 
 	return nil
 }
+
+func GetSteps(idWish int) ([]model.Step, error) {
+	return storage.GetSteps(idWish)
+}
+func CreateStep(newStep model.NewStep) (model.Step, error) {
+	err := CheckTitle(&newStep.Title)
+	if err != nil {
+		return model.Step{}, err
+	}
+
+	step, err := storage.CreateStep(newStep)
+	if err != nil {
+		return model.Step{}, err
+	}
+
+	return step, nil
+}
+func UpdateStep(updateStep model.Step) (model.Step, error) {
+	err := CheckTitle(&updateStep.Title)
+	if err != nil {
+		return model.Step{}, err
+	}
+
+	step, err := storage.UpdateStep(updateStep)
+	if err != nil {
+		return model.Step{}, err
+	}
+
+	return step, nil
+}
+func DeleteStep(idWish int, idStep int) error {
+	err := storage.DeleteStep(idWish, idStep)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func CheckTitle(title *string) error {
+	*title = strings.TrimSpace(*title)
+	if *title == "" {
+		return ErrorTitleEmpty
+	}
+
+	return nil
+}
