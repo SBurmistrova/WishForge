@@ -45,18 +45,10 @@ func CreateWish(newWish model.NewWish) (int, error) {
 
 	request := "INSERT INTO wishes (title) OUTPUT INSERTED.id VALUES (@title)"
 
-	rows, err := dataBase.Query(request, sql.Named("title", newWish.Title))
+	var id int
+	err = dataBase.QueryRow(request, sql.Named("title", newWish.Title)).Scan(&id)
 	if err != nil {
 		return 0, err
-	}
-
-	var id int
-
-	for rows.Next() {
-		err := rows.Scan(&id)
-		if err != nil {
-			return 0, err
-		}
 	}
 
 	return id, nil
@@ -70,17 +62,10 @@ func GetWish(id int) (model.Wish, error) {
 
 	request := "SELECT id, title, completed FROM wishes WHERE id = @id"
 
-	rows, err := dataBase.Query(request, sql.Named("id", id))
+	wish := model.Wish{}
+	err = dataBase.QueryRow(request, sql.Named("id", id)).Scan(&wish.ID, &wish.Title, &wish.Completed)
 	if err != nil {
 		return model.Wish{}, err
-	}
-
-	wish := model.Wish{}
-	for rows.Next() {
-		err := rows.Scan(&wish.ID, &wish.Title, &wish.Completed)
-		if err != nil {
-			return model.Wish{}, err
-		}
 	}
 
 	return wish, nil
@@ -171,17 +156,10 @@ func CreateStep(newStep model.NewStep) (model.Step, error) {
 				
 				SELECT @id`
 
-	rows, err := dataBase.Query(request,
-		sql.Named("id_wish", newStep.IDWish),
-		sql.Named("title", newStep.Title))
-
 	var id int
-	for rows.Next() {
-		err := rows.Scan(&id)
-		if err != nil {
-			return model.Step{}, err
-		}
-	}
+	err = dataBase.QueryRow(request,
+		sql.Named("id_wish", newStep.IDWish),
+		sql.Named("title", newStep.Title)).Scan(&id)
 
 	if err != nil {
 		return model.Step{}, err
