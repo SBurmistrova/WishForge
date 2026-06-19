@@ -14,7 +14,7 @@ func GetWishes() ([]model.Wish, error) {
 	return storage.GetWishes()
 }
 func CreateWish(newWish model.NewWish) error {
-	err := CheckNewWish(&newWish)
+	err := CheckTitle(&newWish.Title)
 	if err != nil {
 		return err
 	}
@@ -42,14 +42,6 @@ func DeleteWish(id int) error {
 	err := storage.DeleteWish(id)
 	if err != nil {
 		return err
-	}
-
-	return nil
-}
-func CheckNewWish(newWish *model.NewWish) error {
-	newWish.Title = strings.TrimSpace(newWish.Title)
-	if newWish.Title == "" {
-		return ErrorTitleEmpty
 	}
 
 	return nil

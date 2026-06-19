@@ -14,7 +14,7 @@ func GetWishes() ([]model.Wish, error) {
 	}
 	defer dataBase.Close()
 
-	request := "SELECT id, title, completed FROM wishes"
+	request := "SELECT id, title, completed FROM wishes ORDER BY id"
 
 	rows, err := dataBase.Query(request)
 	if err != nil {
