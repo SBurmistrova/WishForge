@@ -3,8 +3,11 @@ package storage
 import (
 	"WishForge/internal/model"
 	"database/sql"
+	"fmt"
+	"os"
 
 	_ "github.com/denisenkom/go-mssqldb"
+	"github.com/joho/godotenv"
 )
 
 func GetWishes() ([]model.Wish, error) {
@@ -218,15 +221,25 @@ func DeleteStep(idWish int, idStep int) error {
 }
 
 func connectDataBase() (*sql.DB, error) {
-	connString := "server=localhost;database=ForLearning;integrated security=true"
-	dataBase, err := sql.Open("sqlserver", connString)
-
+	err := godotenv.Load()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Error loading .env file")
 	}
 
-	if err := dataBase.Ping(); err != nil {
-		return nil, err
+	server := os.Getenv("DB_SERVER")
+	port := os.Getenv("DB_PORT")
+	database := os.Getenv("DB_NAME")
+
+	connString := fmt.Sprintf("sqlserver://@%s:%s?database=%s", server, port, database)
+
+	dataBase, err := sql.Open("sqlserver", connString)
+	if err != nil {
+		return nil, fmt.Errorf("Error creating connection: %v", err)
+	}
+
+	err = dataBase.Ping()
+	if err != nil {
+		return nil, fmt.Errorf("Failed to connect to database: %v", err)
 	}
 
 	return dataBase, nil
