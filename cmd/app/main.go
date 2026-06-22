@@ -22,7 +22,7 @@ func main() {
 			r.Patch("/", handlers.PatchWish)
 
 			r.Route("/steps", func(r chi.Router) {
-				r.Get("/", handlers.GetStaps)
+				r.Get("/", handlers.GetSteps)
 				r.Post("/", handlers.PostStep)
 
 				r.Route("/{stepID}", func(r chi.Router) {

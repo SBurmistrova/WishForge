@@ -19,8 +19,7 @@ func GetWishes(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(wishes)
+	sendJSON(w, wishes)
 }
 func PostWish(w http.ResponseWriter, r *http.Request) {
 	var newWish model.NewWish
@@ -40,34 +39,34 @@ func PostWish(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(wish)
+	sendJSON(w, wish)
 }
 func GetWish(w http.ResponseWriter, r *http.Request) {
-	idStr := chi.URLParam(r, "wishID")
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
-		sendError(w, model.Error{Text: err.Error()}, http.StatusBadRequest)
-	}
-
-	wish, err := service.GetWish(id)
+	idWish, err := getID(r, "wishID")
 	if err != nil {
 		sendError(w, model.Error{Text: err.Error()}, http.StatusBadRequest)
 
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(wish)
-}
-func DeleteWish(w http.ResponseWriter, r *http.Request) {
-	idStr := chi.URLParam(r, "wishID")
-	id, err := strconv.Atoi(idStr)
+	wish, err := service.GetWish(idWish)
 	if err != nil {
 		sendError(w, model.Error{Text: err.Error()}, http.StatusBadRequest)
+
+		return
 	}
 
-	err = service.DeleteWish(id)
+	sendJSON(w, wish)
+}
+func DeleteWish(w http.ResponseWriter, r *http.Request) {
+	idWish, err := getID(r, "wishID")
+	if err != nil {
+		sendError(w, model.Error{Text: err.Error()}, http.StatusBadRequest)
+
+		return
+	}
+
+	err = service.DeleteWish(idWish)
 	if err != nil {
 		sendError(w, model.Error{Text: err.Error()}, http.StatusBadRequest)
 	}
@@ -82,10 +81,11 @@ func PatchWish(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	idStr := chi.URLParam(r, "wishID")
-	updateWish.ID, err = strconv.Atoi(idStr)
+	updateWish.ID, err = getID(r, "wishID")
 	if err != nil {
 		sendError(w, model.Error{Text: err.Error()}, http.StatusBadRequest)
+
+		return
 	}
 
 	wish, err := service.UpdateWish(updateWish)
@@ -94,14 +94,15 @@ func PatchWish(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(wish)
+
+	sendJSON(w, wish)
 }
-func GetStaps(w http.ResponseWriter, r *http.Request) {
-	idWishStr := chi.URLParam(r, "wishID")
-	idWish, err := strconv.Atoi(idWishStr)
+func GetSteps(w http.ResponseWriter, r *http.Request) {
+	idWish, err := getID(r, "wishID")
 	if err != nil {
 		sendError(w, model.Error{Text: err.Error()}, http.StatusBadRequest)
+
+		return
 	}
 
 	steps, err := service.GetSteps(idWish)
@@ -111,21 +112,22 @@ func GetStaps(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(steps)
+	sendJSON(w, steps)
 }
 func PostStep(w http.ResponseWriter, r *http.Request) {
 	var newStep model.NewStep
 	err := json.NewDecoder(r.Body).Decode(&newStep)
 	if err != nil {
 		sendError(w, model.Error{Text: err.Error()}, http.StatusBadRequest)
+
 		return
 	}
 
-	idWishStr := chi.URLParam(r, "wishID")
-	newStep.IDWish, err = strconv.Atoi(idWishStr)
+	newStep.IDWish, err = getID(r, "wishID")
 	if err != nil {
 		sendError(w, model.Error{Text: err.Error()}, http.StatusBadRequest)
+
+		return
 	}
 
 	step, err := service.CreateStep(newStep)
@@ -135,8 +137,7 @@ func PostStep(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(step)
+	sendJSON(w, step)
 }
 func PatchStep(w http.ResponseWriter, r *http.Request) {
 	var updateStep model.Step
@@ -147,16 +148,14 @@ func PatchStep(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	idWishStr := chi.URLParam(r, "wishID")
-	updateStep.IDWish, err = strconv.Atoi(idWishStr)
+	updateStep.IDWish, err = getID(r, "wishID")
 	if err != nil {
 		sendError(w, model.Error{Text: err.Error()}, http.StatusBadRequest)
 
 		return
 	}
 
-	idStepStr := chi.URLParam(r, "stepID")
-	updateStep.ID, err = strconv.Atoi(idStepStr)
+	updateStep.ID, err = getID(r, "stepID")
 	if err != nil {
 		sendError(w, model.Error{Text: err.Error()}, http.StatusBadRequest)
 
@@ -170,20 +169,21 @@ func PatchStep(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(step)
+	sendJSON(w, step)
 }
 func DeleteStep(w http.ResponseWriter, r *http.Request) {
-	idWishStr := chi.URLParam(r, "wishID")
-	idWish, err := strconv.Atoi(idWishStr)
+	idWish, err := getID(r, "wishID")
 	if err != nil {
 		sendError(w, model.Error{Text: err.Error()}, http.StatusBadRequest)
+
+		return
 	}
 
-	idStepStr := chi.URLParam(r, "stepID")
-	idStep, err := strconv.Atoi(idStepStr)
+	idStep, err := getID(r, "stepID")
 	if err != nil {
 		sendError(w, model.Error{Text: err.Error()}, http.StatusBadRequest)
+
+		return
 	}
 
 	err = service.DeleteStep(idWish, idStep)
@@ -196,4 +196,17 @@ func sendError(w http.ResponseWriter, err model.Error, statusCode int) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
 	json.NewEncoder(w).Encode(err)
+}
+func sendJSON(w http.ResponseWriter, data any) {
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(data)
+}
+func getID(r *http.Request, key string) (int, error) {
+	idStr := chi.URLParam(r, key)
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		return 0, err
+	}
+
+	return id, nil
 }
