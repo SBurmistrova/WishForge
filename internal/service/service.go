@@ -8,7 +8,6 @@ import (
 )
 
 var ErrorTitleEmpty = errors.New("Title is empty")
-var ErrorWishNotFound = errors.New("Wish is not found")
 
 func GetWishes() ([]model.Wish, error) {
 	return storage.GetWishes()
@@ -30,10 +29,6 @@ func GetWish(id int) (model.Wish, error) {
 	wish, err := storage.GetWish(id)
 	if err != nil {
 		return model.Wish{}, err
-	}
-
-	if wish.ID == 0 {
-		return model.Wish{}, ErrorWishNotFound
 	}
 
 	return wish, nil

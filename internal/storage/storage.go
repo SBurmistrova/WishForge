@@ -99,15 +99,21 @@ func DeleteWish(id int) error {
 	}
 	defer dataBase.Close()
 
-	request := `DELETE FROM steps WHERE id_wish = @id
-	            DELETE FROM wishes WHERE id = @id`
-
-	_, err = dataBase.Exec(request, sql.Named("id", id))
+	tx, err := dataBase.Begin()
 	if err != nil {
 		return err
 	}
+	defer tx.Rollback()
 
-	return nil
+	if _, err = tx.Exec("DELETE FROM steps WHERE id_wish = @id", sql.Named("id", id)); err != nil {
+		return err
+	}
+
+	if _, err = tx.Exec("DELETE FROM wishes WHERE id = @id", sql.Named("id", id)); err != nil {
+		return err
+	}
+
+	return tx.Commit()
 }
 
 func GetSteps(idWish int) ([]model.Step, error) {
