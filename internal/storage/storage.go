@@ -20,6 +20,7 @@ func GetWishes() ([]model.Wish, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	wishes := make([]model.Wish, 0)
 
@@ -122,6 +123,7 @@ func GetSteps(idWish int) ([]model.Step, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	steps := make([]model.Step, 0)
 

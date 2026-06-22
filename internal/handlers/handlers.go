@@ -6,206 +6,194 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
-	"strings"
+
+	"github.com/go-chi/chi"
 )
 
-func HandlerWish(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case http.MethodGet:
-		wishes, err := service.GetWishes()
+func GetWishes(w http.ResponseWriter, r *http.Request) {
+	wishes, err := service.GetWishes()
 
-		if err != nil {
-			sendMessage(w, model.Message{Text: err.Error()}, http.StatusBadRequest)
+	if err != nil {
+		sendError(w, model.Error{Text: err.Error()}, http.StatusBadRequest)
 
-			return
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(wishes)
-
-	case http.MethodPost:
-		var newWish model.NewWish
-		err := json.NewDecoder(r.Body).Decode(&newWish)
-
-		if err != nil {
-			sendMessage(w, model.Message{Text: err.Error()}, http.StatusBadRequest)
-
-			return
-		}
-
-		wish, err := service.CreateWish(newWish)
-
-		if err != nil {
-			sendMessage(w, model.Message{Text: err.Error()}, http.StatusBadRequest)
-
-			return
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(wish)
-
-	default:
-		sendMessage(w, model.Message{Text: "Unsupported request type"}, http.StatusMethodNotAllowed)
+		return
 	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(wishes)
 }
-func HandlerWishID(w http.ResponseWriter, r *http.Request) {
-	idStr := strings.TrimPrefix(r.URL.Path, "/wishes/")
+func PostWish(w http.ResponseWriter, r *http.Request) {
+	var newWish model.NewWish
+	err := json.NewDecoder(r.Body).Decode(&newWish)
+
+	if err != nil {
+		sendError(w, model.Error{Text: err.Error()}, http.StatusBadRequest)
+
+		return
+	}
+
+	wish, err := service.CreateWish(newWish)
+
+	if err != nil {
+		sendError(w, model.Error{Text: err.Error()}, http.StatusBadRequest)
+
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(wish)
+}
+func GetWish(w http.ResponseWriter, r *http.Request) {
+	idStr := chi.URLParam(r, "wishID")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		sendMessage(w, model.Message{Text: err.Error()}, http.StatusBadRequest)
-
-		return
+		sendError(w, model.Error{Text: err.Error()}, http.StatusBadRequest)
 	}
 
-	switch r.Method {
-	case http.MethodGet:
-		wish, err := service.GetWish(id)
-		if err != nil {
-			sendMessage(w, model.Message{Text: err.Error()}, http.StatusBadRequest)
-
-			return
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(wish)
-
-	case http.MethodDelete:
-		err := service.DeleteWish(id)
-		if err != nil {
-			sendMessage(w, model.Message{Text: err.Error()}, http.StatusBadRequest)
-		}
-
-	case http.MethodPatch:
-		var updateWish model.Wish
-
-		err := json.NewDecoder(r.Body).Decode(&updateWish)
-		if err != nil {
-			sendMessage(w, model.Message{Text: err.Error()}, http.StatusBadRequest)
-
-			return
-		}
-
-		updateWish.ID = id
-
-		wish, err := service.UpdateWish(updateWish)
-		if err != nil {
-			sendMessage(w, model.Message{Text: err.Error()}, http.StatusBadRequest)
-
-			return
-		}
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(wish)
-
-	default:
-		sendMessage(w, model.Message{Text: "Unsupported request type"}, http.StatusMethodNotAllowed)
-	}
-}
-
-func HandlerGetAddStep(w http.ResponseWriter, r *http.Request) {
-	idStr := strings.TrimPrefix(r.URL.Path, "/wishes/")
-	idStr = strings.TrimSuffix(idStr, "/steps")
-	idWish, err := strconv.Atoi(idStr)
+	wish, err := service.GetWish(id)
 	if err != nil {
-		sendMessage(w, model.Message{Text: err.Error()}, http.StatusBadRequest)
+		sendError(w, model.Error{Text: err.Error()}, http.StatusBadRequest)
 
 		return
 	}
 
-	switch r.Method {
-	case http.MethodGet:
-		steps, err := service.GetSteps(idWish)
-		if err != nil {
-			sendMessage(w, model.Message{Text: err.Error()}, http.StatusBadRequest)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(wish)
+}
+func DeleteWish(w http.ResponseWriter, r *http.Request) {
+	idStr := chi.URLParam(r, "wishID")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		sendError(w, model.Error{Text: err.Error()}, http.StatusBadRequest)
+	}
 
-			return
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(steps)
-
-	case http.MethodPost:
-		var newStep model.NewStep
-		err := json.NewDecoder(r.Body).Decode(&newStep)
-		if err != nil {
-			sendMessage(w, model.Message{Text: err.Error()}, http.StatusBadRequest)
-			return
-		}
-
-		newStep.IDWish = idWish
-
-		step, err := service.CreateStep(newStep)
-		if err != nil {
-			sendMessage(w, model.Message{Text: err.Error()}, http.StatusBadRequest)
-
-			return
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(step)
-	default:
-		sendMessage(w, model.Message{Text: "Unsupported request type"}, http.StatusMethodNotAllowed)
+	err = service.DeleteWish(id)
+	if err != nil {
+		sendError(w, model.Error{Text: err.Error()}, http.StatusBadRequest)
 	}
 }
-func HandlerUpdateDeleteStep(w http.ResponseWriter, r *http.Request) {
-	idWishStr1 := strings.TrimPrefix(r.URL.Path, "/wishes/")
-	var idWishStr string
-	for _, ch := range idWishStr1 {
-		if ch == '/' {
-			break
-		}
-		idWishStr = idWishStr + string(ch)
+func PatchWish(w http.ResponseWriter, r *http.Request) {
+	var updateWish model.Wish
+
+	err := json.NewDecoder(r.Body).Decode(&updateWish)
+	if err != nil {
+		sendError(w, model.Error{Text: err.Error()}, http.StatusBadRequest)
+
+		return
 	}
+
+	idStr := chi.URLParam(r, "wishID")
+	updateWish.ID, err = strconv.Atoi(idStr)
+	if err != nil {
+		sendError(w, model.Error{Text: err.Error()}, http.StatusBadRequest)
+	}
+
+	wish, err := service.UpdateWish(updateWish)
+	if err != nil {
+		sendError(w, model.Error{Text: err.Error()}, http.StatusBadRequest)
+
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(wish)
+}
+func GetStaps(w http.ResponseWriter, r *http.Request) {
+	idWishStr := chi.URLParam(r, "wishID")
 	idWish, err := strconv.Atoi(idWishStr)
 	if err != nil {
-		sendMessage(w, model.Message{Text: err.Error()}, http.StatusBadRequest)
+		sendError(w, model.Error{Text: err.Error()}, http.StatusBadRequest)
+	}
+
+	steps, err := service.GetSteps(idWish)
+	if err != nil {
+		sendError(w, model.Error{Text: err.Error()}, http.StatusBadRequest)
 
 		return
 	}
 
-	idStepStr := strings.TrimPrefix(r.URL.Path, "/wishes/"+idWishStr+"/steps/")
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(steps)
+}
+func PostStep(w http.ResponseWriter, r *http.Request) {
+	var newStep model.NewStep
+	err := json.NewDecoder(r.Body).Decode(&newStep)
+	if err != nil {
+		sendError(w, model.Error{Text: err.Error()}, http.StatusBadRequest)
+		return
+	}
+
+	idWishStr := chi.URLParam(r, "wishID")
+	newStep.IDWish, err = strconv.Atoi(idWishStr)
+	if err != nil {
+		sendError(w, model.Error{Text: err.Error()}, http.StatusBadRequest)
+	}
+
+	step, err := service.CreateStep(newStep)
+	if err != nil {
+		sendError(w, model.Error{Text: err.Error()}, http.StatusBadRequest)
+
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(step)
+}
+func PatchStep(w http.ResponseWriter, r *http.Request) {
+	var updateStep model.Step
+	err := json.NewDecoder(r.Body).Decode(&updateStep)
+	if err != nil {
+		sendError(w, model.Error{Text: err.Error()}, http.StatusBadRequest)
+
+		return
+	}
+
+	idWishStr := chi.URLParam(r, "wishID")
+	updateStep.IDWish, err = strconv.Atoi(idWishStr)
+	if err != nil {
+		sendError(w, model.Error{Text: err.Error()}, http.StatusBadRequest)
+
+		return
+	}
+
+	idStepStr := chi.URLParam(r, "stepID")
+	updateStep.ID, err = strconv.Atoi(idStepStr)
+	if err != nil {
+		sendError(w, model.Error{Text: err.Error()}, http.StatusBadRequest)
+
+		return
+	}
+
+	step, err := service.UpdateStep(updateStep)
+	if err != nil {
+		sendError(w, model.Error{Text: err.Error()}, http.StatusBadRequest)
+
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(step)
+}
+func DeleteStep(w http.ResponseWriter, r *http.Request) {
+	idWishStr := chi.URLParam(r, "wishID")
+	idWish, err := strconv.Atoi(idWishStr)
+	if err != nil {
+		sendError(w, model.Error{Text: err.Error()}, http.StatusBadRequest)
+	}
+
+	idStepStr := chi.URLParam(r, "stepID")
 	idStep, err := strconv.Atoi(idStepStr)
 	if err != nil {
-		sendMessage(w, model.Message{Text: err.Error()}, http.StatusBadRequest)
-
-		return
+		sendError(w, model.Error{Text: err.Error()}, http.StatusBadRequest)
 	}
 
-	switch r.Method {
-	case http.MethodPatch:
-		var updateStep model.Step
-		err := json.NewDecoder(r.Body).Decode(&updateStep)
-		if err != nil {
-			sendMessage(w, model.Message{Text: err.Error()}, http.StatusBadRequest)
-
-			return
-		}
-
-		updateStep.ID = idStep
-		updateStep.IDWish = idWish
-
-		step, err := service.UpdateStep(updateStep)
-		if err != nil {
-			sendMessage(w, model.Message{Text: err.Error()}, http.StatusBadRequest)
-
-			return
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(step)
-
-	case http.MethodDelete:
-		err := service.DeleteStep(idWish, idStep)
-		if err != nil {
-			sendMessage(w, model.Message{Text: err.Error()}, http.StatusBadRequest)
-		}
-
-	default:
-		sendMessage(w, model.Message{Text: "Unsupported request type"}, http.StatusMethodNotAllowed)
+	err = service.DeleteStep(idWish, idStep)
+	if err != nil {
+		sendError(w, model.Error{Text: err.Error()}, http.StatusBadRequest)
 	}
 }
 
-func sendMessage(w http.ResponseWriter, message model.Message, statusCode int) {
+func sendError(w http.ResponseWriter, err model.Error, statusCode int) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
-	json.NewEncoder(w).Encode(message)
+	json.NewEncoder(w).Encode(err)
 }

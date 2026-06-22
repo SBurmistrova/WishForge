@@ -53,12 +53,7 @@ func UpdateWish(updateWish model.Wish) (model.Wish, error) {
 
 }
 func DeleteWish(id int) error {
-	err := storage.DeleteWish(id)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return storage.DeleteWish(id)
 }
 
 func GetSteps(idWish int) ([]model.Step, error) {
@@ -91,12 +86,7 @@ func UpdateStep(updateStep model.Step) (model.Step, error) {
 	return updateStep, nil
 }
 func DeleteStep(idWish int, idStep int) error {
-	err := storage.DeleteStep(idWish, idStep)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return storage.DeleteStep(idWish, idStep)
 }
 
 func CheckTitle(title *string) error {
