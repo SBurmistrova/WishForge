@@ -1,0 +1,5 @@
+CREATE TABLE wishes (
+id INT IDENTITY(1,1) PRIMARY KEY,
+title VARCHAR(50) NOT NULL,
+completed BIT DEFAULT 0 
+);

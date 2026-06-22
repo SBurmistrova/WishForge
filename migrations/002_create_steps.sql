@@ -1,0 +1,6 @@
+CREATE TABLE steps (
+id INT NOT NULL,
+id_wish INT NOT NULL,
+title VARCHAR(50) NOT NULL,
+completed BIT DEFAULT 0 
+);
