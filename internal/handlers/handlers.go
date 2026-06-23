@@ -208,6 +208,24 @@ func DeleteStep(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func Progress(w http.ResponseWriter, r *http.Request) {
+	idWish, err := getID(r, "wishID")
+	if err != nil {
+		sendError(w, model.Error{Text: err.Error()}, http.StatusBadRequest)
+
+		return
+	}
+
+	progress, err := service.GetProgress(idWish)
+	if err != nil {
+		sendError(w, model.Error{Text: err.Error()}, http.StatusInternalServerError)
+
+		return
+	}
+
+	sendJSON(w, progress)
+}
+
 func sendError(w http.ResponseWriter, err model.Error, statusCode int) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)

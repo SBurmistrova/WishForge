@@ -20,6 +20,7 @@ func main() {
 			r.Get("/", handlers.GetWish)
 			r.Delete("/", handlers.DeleteWish)
 			r.Patch("/", handlers.PatchWish)
+			r.Get("/progress", handlers.Progress)
 
 			r.Route("/steps", func(r chi.Router) {
 				r.Get("/", handlers.GetSteps)

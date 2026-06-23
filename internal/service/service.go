@@ -34,18 +34,19 @@ func GetWish(id int) (model.Wish, error) {
 	return wish, nil
 }
 func UpdateWish(updateWish model.Wish) (model.Wish, error) {
-	err := CheckTitle(&updateWish.Title)
-	if err != nil {
-		return model.Wish{}, err
+	if !updateWish.Completed {
+		err := CheckTitle(&updateWish.Title)
+		if err != nil {
+			return model.Wish{}, err
+		}
 	}
 
-	err = storage.UpdateWish(updateWish)
+	err := storage.UpdateWish(updateWish)
 	if err != nil {
 		return model.Wish{}, err
 	}
 
 	return model.Wish{ID: updateWish.ID, Title: updateWish.Title, Completed: updateWish.Completed}, nil
-
 }
 func DeleteWish(id int) error {
 	return storage.DeleteWish(id)
@@ -78,10 +79,28 @@ func UpdateStep(updateStep model.Step) (model.Step, error) {
 		return model.Step{}, err
 	}
 
+	if updateStep.Completed {
+		progress, err := storage.GetProgress(updateStep.IDWish)
+		if err != nil {
+			return model.Step{}, err
+		}
+
+		if progress.Progress == 100 {
+			_, err := UpdateWish(model.Wish{ID: updateStep.IDWish, Completed: true})
+			if err != nil {
+				return model.Step{}, err
+			}
+		}
+	}
+
 	return updateStep, nil
 }
 func DeleteStep(idWish int, idStep int) error {
 	return storage.DeleteStep(idWish, idStep)
+}
+
+func GetProgress(idWish int) (model.Progress, error) {
+	return storage.GetProgress(idWish)
 }
 
 func CheckTitle(title *string) error {
