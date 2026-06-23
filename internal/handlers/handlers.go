@@ -14,7 +14,7 @@ func GetWishes(w http.ResponseWriter, r *http.Request) {
 	wishes, err := service.GetWishes()
 
 	if err != nil {
-		sendError(w, model.Error{Text: err.Error()}, http.StatusBadRequest)
+		sendError(w, model.Error{Text: err.Error()}, http.StatusInternalServerError)
 
 		return
 	}
@@ -34,7 +34,11 @@ func PostWish(w http.ResponseWriter, r *http.Request) {
 	wish, err := service.CreateWish(newWish)
 
 	if err != nil {
-		sendError(w, model.Error{Text: err.Error()}, http.StatusBadRequest)
+		if err == service.ErrorTitleEmpty {
+			sendError(w, model.Error{Text: err.Error()}, http.StatusBadRequest)
+		} else {
+			sendError(w, model.Error{Text: err.Error()}, http.StatusInternalServerError)
+		}
 
 		return
 	}
@@ -51,7 +55,7 @@ func GetWish(w http.ResponseWriter, r *http.Request) {
 
 	wish, err := service.GetWish(idWish)
 	if err != nil {
-		sendError(w, model.Error{Text: err.Error()}, http.StatusBadRequest)
+		sendError(w, model.Error{Text: err.Error()}, http.StatusInternalServerError)
 
 		return
 	}
@@ -68,7 +72,7 @@ func DeleteWish(w http.ResponseWriter, r *http.Request) {
 
 	err = service.DeleteWish(idWish)
 	if err != nil {
-		sendError(w, model.Error{Text: err.Error()}, http.StatusBadRequest)
+		sendError(w, model.Error{Text: err.Error()}, http.StatusInternalServerError)
 	}
 }
 func PatchWish(w http.ResponseWriter, r *http.Request) {
@@ -90,7 +94,11 @@ func PatchWish(w http.ResponseWriter, r *http.Request) {
 
 	wish, err := service.UpdateWish(updateWish)
 	if err != nil {
-		sendError(w, model.Error{Text: err.Error()}, http.StatusBadRequest)
+		if err == service.ErrorTitleEmpty {
+			sendError(w, model.Error{Text: err.Error()}, http.StatusBadRequest)
+		} else {
+			sendError(w, model.Error{Text: err.Error()}, http.StatusInternalServerError)
+		}
 
 		return
 	}
@@ -107,7 +115,7 @@ func GetSteps(w http.ResponseWriter, r *http.Request) {
 
 	steps, err := service.GetSteps(idWish)
 	if err != nil {
-		sendError(w, model.Error{Text: err.Error()}, http.StatusBadRequest)
+		sendError(w, model.Error{Text: err.Error()}, http.StatusInternalServerError)
 
 		return
 	}
@@ -132,7 +140,11 @@ func PostStep(w http.ResponseWriter, r *http.Request) {
 
 	step, err := service.CreateStep(newStep)
 	if err != nil {
-		sendError(w, model.Error{Text: err.Error()}, http.StatusBadRequest)
+		if err == service.ErrorTitleEmpty {
+			sendError(w, model.Error{Text: err.Error()}, http.StatusBadRequest)
+		} else {
+			sendError(w, model.Error{Text: err.Error()}, http.StatusInternalServerError)
+		}
 
 		return
 	}
@@ -164,7 +176,11 @@ func PatchStep(w http.ResponseWriter, r *http.Request) {
 
 	step, err := service.UpdateStep(updateStep)
 	if err != nil {
-		sendError(w, model.Error{Text: err.Error()}, http.StatusBadRequest)
+		if err == service.ErrorTitleEmpty {
+			sendError(w, model.Error{Text: err.Error()}, http.StatusBadRequest)
+		} else {
+			sendError(w, model.Error{Text: err.Error()}, http.StatusInternalServerError)
+		}
 
 		return
 	}
@@ -188,7 +204,7 @@ func DeleteStep(w http.ResponseWriter, r *http.Request) {
 
 	err = service.DeleteStep(idWish, idStep)
 	if err != nil {
-		sendError(w, model.Error{Text: err.Error()}, http.StatusBadRequest)
+		sendError(w, model.Error{Text: err.Error()}, http.StatusInternalServerError)
 	}
 }
 
