@@ -210,7 +210,8 @@ func DeleteStep(idWish int, idStep int) error {
 	}
 	defer dataBase.Close()
 
-	request := "DELETE FROM steps WHERE id_wish = @id_wish AND id = @id"
+	request := `DELETE FROM steps WHERE id_wish = @id_wish AND id = @id
+	            UPDATE steps SET id = id - 1 WHERE id_wish = @id_wish AND id > @id`
 
 	_, err = dataBase.Exec(request,
 		sql.Named("id_wish", idWish),
