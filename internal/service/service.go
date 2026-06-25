@@ -80,7 +80,7 @@ func UpdateStep(updateStep model.Step) (model.Step, error) {
 	}
 
 	if updateStep.Completed {
-		progress, err := storage.GetProgress(updateStep.IDWish)
+		progress, err := GetProgress(updateStep.IDWish)
 		if err != nil {
 			return model.Step{}, err
 		}
@@ -100,7 +100,28 @@ func DeleteStep(idWish int, idStep int) error {
 }
 
 func GetProgress(idWish int) (model.Progress, error) {
-	return storage.GetProgress(idWish)
+	steps, err := storage.GetSteps(idWish)
+	if err != nil {
+		return model.Progress{}, err
+	}
+
+	var progress model.Progress
+
+	for _, step := range steps {
+		if step.Completed {
+			progress.CountCompleted++
+		} else {
+			progress.CountNotCompleted++
+		}
+	}
+
+	if len(steps) == 0 {
+		return progress, nil
+	}
+
+	progress.Progress = int((float64(progress.CountCompleted) / (float64(progress.CountCompleted) + float64(progress.CountNotCompleted))) * 100)
+
+	return progress, nil
 }
 
 func CheckTitle(title *string) error {

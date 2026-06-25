@@ -224,30 +224,6 @@ func DeleteStep(idWish int, idStep int) error {
 	return nil
 }
 
-func GetProgress(idWish int) (model.Progress, error) {
-	dataBase, err := connectDataBase()
-	if err != nil {
-		return model.Progress{}, err
-	}
-	defer dataBase.Close()
-
-	request := `SELECT 
-                ROUND(CAST((SELECT COUNT(*) FROM steps WHERE id_wish = @id_wish AND completed = 1) AS FLOAT) / NULLIF(COUNT(*), 0) * 100, 2) AS progress,
-                (select count(*) from steps where id_wish = @id_wish AND completed = 1) as completed,
-                (select count(*) from steps where id_wish = @id_wish AND completed = 0) as not_completed
-                FROM steps 
-                WHERE id_wish = @id_wish`
-
-	var progress model.Progress
-
-	err = dataBase.QueryRow(request, sql.Named("id_wish", idWish)).Scan(&progress.Progress, &progress.CountCompleted, &progress.CountNotCompleted)
-	if err != nil {
-		return model.Progress{}, err
-	}
-
-	return progress, nil
-}
-
 func connectDataBase() (*sql.DB, error) {
 	err := godotenv.Load()
 	if err != nil {
