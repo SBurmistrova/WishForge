@@ -1,0 +1,475 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "REST API for managing wishes and steps.",
+        "title": "WishForge API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "basePath": "/",
+    "paths": {
+        "/wishes": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "wishes"
+                ],
+                "summary": "Get all wishes",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/WishForge_internal_model.Wish"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/WishForge_internal_model.Error"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "wishes"
+                ],
+                "summary": "Create a new wish",
+                "parameters": [
+                    {
+                        "description": "Wish",
+                        "name": "wish",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/WishForge_internal_model.CreateWishRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/WishForge_internal_model.Wish"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/WishForge_internal_model.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/wishes/{wishID}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "wishes"
+                ],
+                "summary": "Get wish",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Wish ID",
+                        "name": "wishID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/WishForge_internal_model.Wish"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/WishForge_internal_model.Error"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "wishes"
+                ],
+                "summary": "Delete a wish",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Wish ID",
+                        "name": "wishID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/WishForge_internal_model.Error"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "wishes"
+                ],
+                "summary": "Change of wish",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Wish ID",
+                        "name": "wishID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Wish",
+                        "name": "wish",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/WishForge_internal_model.UpdateWishRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/WishForge_internal_model.Wish"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/WishForge_internal_model.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/wishes/{wishID}/progress": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "progress"
+                ],
+                "summary": "Get progress",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Wish ID",
+                        "name": "wishID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/WishForge_internal_model.Progress"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/WishForge_internal_model.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/wishes/{wishID}/steps": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "steps"
+                ],
+                "summary": "Getting all the steps for a wish",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Wish ID",
+                        "name": "wishID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/WishForge_internal_model.Step"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/WishForge_internal_model.Error"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "steps"
+                ],
+                "summary": "Create a new step",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Wish ID",
+                        "name": "wishID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Step",
+                        "name": "wish",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/WishForge_internal_model.CreateStepRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/WishForge_internal_model.Step"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/WishForge_internal_model.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/wishes/{wishID}/steps/{stepID}": {
+            "delete": {
+                "tags": [
+                    "steps"
+                ],
+                "summary": "Delete a step",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Wish ID",
+                        "name": "wishID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Step ID",
+                        "name": "stepID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/WishForge_internal_model.Error"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "steps"
+                ],
+                "summary": "Change of step",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Wish ID",
+                        "name": "wishID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Step ID",
+                        "name": "stepID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Step",
+                        "name": "wish",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/WishForge_internal_model.UpdateStepRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/WishForge_internal_model.Step"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/WishForge_internal_model.Error"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "WishForge_internal_model.CreateStepRequest": {
+            "type": "object",
+            "properties": {
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "WishForge_internal_model.CreateWishRequest": {
+            "type": "object",
+            "properties": {
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "WishForge_internal_model.Error": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                }
+            }
+        },
+        "WishForge_internal_model.Progress": {
+            "type": "object",
+            "properties": {
+                "count_completed": {
+                    "type": "integer"
+                },
+                "count_not_completed": {
+                    "type": "integer"
+                },
+                "progress": {
+                    "type": "integer"
+                }
+            }
+        },
+        "WishForge_internal_model.Step": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "id_wish": {
+                    "type": "integer"
+                },
+                "is_completed": {
+                    "type": "boolean"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "WishForge_internal_model.UpdateStepRequest": {
+            "type": "object",
+            "properties": {
+                "is_completed": {
+                    "type": "boolean"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "WishForge_internal_model.UpdateWishRequest": {
+            "type": "object",
+            "properties": {
+                "is_completed": {
+                    "type": "boolean"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "WishForge_internal_model.Wish": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "is_completed": {
+                    "type": "boolean"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,309 @@
+basePath: /
+definitions:
+  WishForge_internal_model.CreateStepRequest:
+    properties:
+      title:
+        type: string
+    type: object
+  WishForge_internal_model.CreateWishRequest:
+    properties:
+      title:
+        type: string
+    type: object
+  WishForge_internal_model.Error:
+    properties:
+      error:
+        type: string
+    type: object
+  WishForge_internal_model.Progress:
+    properties:
+      count_completed:
+        type: integer
+      count_not_completed:
+        type: integer
+      progress:
+        type: integer
+    type: object
+  WishForge_internal_model.Step:
+    properties:
+      id:
+        type: integer
+      id_wish:
+        type: integer
+      is_completed:
+        type: boolean
+      title:
+        type: string
+    type: object
+  WishForge_internal_model.UpdateStepRequest:
+    properties:
+      is_completed:
+        type: boolean
+      title:
+        type: string
+    type: object
+  WishForge_internal_model.UpdateWishRequest:
+    properties:
+      is_completed:
+        type: boolean
+      title:
+        type: string
+    type: object
+  WishForge_internal_model.Wish:
+    properties:
+      id:
+        type: integer
+      is_completed:
+        type: boolean
+      title:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: REST API for managing wishes and steps.
+  title: WishForge API
+  version: "1.0"
+paths:
+  /wishes:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/WishForge_internal_model.Wish'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/WishForge_internal_model.Error'
+      summary: Get all wishes
+      tags:
+      - wishes
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Wish
+        in: body
+        name: wish
+        required: true
+        schema:
+          $ref: '#/definitions/WishForge_internal_model.CreateWishRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/WishForge_internal_model.Wish'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/WishForge_internal_model.Error'
+      summary: Create a new wish
+      tags:
+      - wishes
+  /wishes/{wishID}:
+    delete:
+      parameters:
+      - description: Wish ID
+        in: path
+        name: wishID
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/WishForge_internal_model.Error'
+      summary: Delete a wish
+      tags:
+      - wishes
+    get:
+      parameters:
+      - description: Wish ID
+        in: path
+        name: wishID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/WishForge_internal_model.Wish'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/WishForge_internal_model.Error'
+      summary: Get wish
+      tags:
+      - wishes
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: Wish ID
+        in: path
+        name: wishID
+        required: true
+        type: integer
+      - description: Wish
+        in: body
+        name: wish
+        required: true
+        schema:
+          $ref: '#/definitions/WishForge_internal_model.UpdateWishRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/WishForge_internal_model.Wish'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/WishForge_internal_model.Error'
+      summary: Change of wish
+      tags:
+      - wishes
+  /wishes/{wishID}/progress:
+    get:
+      parameters:
+      - description: Wish ID
+        in: path
+        name: wishID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/WishForge_internal_model.Progress'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/WishForge_internal_model.Error'
+      summary: Get progress
+      tags:
+      - progress
+  /wishes/{wishID}/steps:
+    get:
+      parameters:
+      - description: Wish ID
+        in: path
+        name: wishID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/WishForge_internal_model.Step'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/WishForge_internal_model.Error'
+      summary: Getting all the steps for a wish
+      tags:
+      - steps
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Wish ID
+        in: path
+        name: wishID
+        required: true
+        type: integer
+      - description: Step
+        in: body
+        name: wish
+        required: true
+        schema:
+          $ref: '#/definitions/WishForge_internal_model.CreateStepRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/WishForge_internal_model.Step'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/WishForge_internal_model.Error'
+      summary: Create a new step
+      tags:
+      - steps
+  /wishes/{wishID}/steps/{stepID}:
+    delete:
+      parameters:
+      - description: Wish ID
+        in: path
+        name: wishID
+        required: true
+        type: integer
+      - description: Step ID
+        in: path
+        name: stepID
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/WishForge_internal_model.Error'
+      summary: Delete a step
+      tags:
+      - steps
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: Wish ID
+        in: path
+        name: wishID
+        required: true
+        type: integer
+      - description: Step ID
+        in: path
+        name: stepID
+        required: true
+        type: integer
+      - description: Step
+        in: body
+        name: wish
+        required: true
+        schema:
+          $ref: '#/definitions/WishForge_internal_model.UpdateStepRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/WishForge_internal_model.Step'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/WishForge_internal_model.Error'
+      summary: Change of step
+      tags:
+      - steps
+swagger: "2.0"
