@@ -5,12 +5,21 @@ import (
 	"fmt"
 	"net/http"
 
+	_ "WishForge/docs"
+
 	"github.com/go-chi/chi"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
+// @title           WishForge API
+// @version         1.0
+// @description     REST API for managing wishes and steps.
+// @BasePath        /
 func main() {
 
 	r := chi.NewRouter()
+
+	r.Get("/swagger/*", httpSwagger.Handler())
 
 	r.Route("/wishes", func(r chi.Router) {
 		r.Get("/", handlers.GetWishes)
