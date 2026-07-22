@@ -12,7 +12,7 @@ var ErrorTitleEmpty = errors.New("Title is empty")
 func GetWishes() ([]model.Wish, error) {
 	return storage.GetWishes()
 }
-func CreateWish(newWish model.NewWish) (model.Wish, error) {
+func CreateWish(newWish model.CreateWishRequest) (model.Wish, error) {
 	err := CheckTitle(&newWish.Title)
 	if err != nil {
 		return model.Wish{}, err
@@ -55,7 +55,7 @@ func DeleteWish(id int) error {
 func GetSteps(idWish int) ([]model.Step, error) {
 	return storage.GetSteps(idWish)
 }
-func CreateStep(newStep model.NewStep) (model.Step, error) {
+func CreateStep(newStep model.CreateStep) (model.Step, error) {
 	err := CheckTitle(&newStep.Title)
 	if err != nil {
 		return model.Step{}, err

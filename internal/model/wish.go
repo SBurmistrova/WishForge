@@ -6,6 +6,10 @@ type Wish struct {
 	Completed bool   `json:"is_completed"`
 }
 
-type NewWish struct {
+type CreateWishRequest struct {
 	Title string `json:"title"`
+}
+type UpdateWishRequest struct {
+	Title     string `json:"title"`
+	Completed bool   `json:"is_completed"`
 }

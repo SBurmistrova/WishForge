@@ -40,7 +40,7 @@ func GetWishes() ([]model.Wish, error) {
 
 	return wishes, nil
 }
-func CreateWish(newWish model.NewWish) (int, error) {
+func CreateWish(newWish model.CreateWishRequest) (int, error) {
 	dataBase, err := connectDataBase()
 	if err != nil {
 		return 0, err
@@ -152,7 +152,7 @@ func GetSteps(idWish int) ([]model.Step, error) {
 
 	return steps, nil
 }
-func CreateStep(newStep model.NewStep) (model.Step, error) {
+func CreateStep(newStep model.CreateStep) (model.Step, error) {
 	dataBase, err := connectDataBase()
 	if err != nil {
 		return model.Step{}, err
@@ -227,7 +227,7 @@ func DeleteStep(idWish int, idStep int) error {
 func connectDataBase() (*sql.DB, error) {
 	err := godotenv.Load()
 	if err != nil {
-		return nil, fmt.Errorf("Error loading .env file")
+		return nil, fmt.Errorf("Error loading .env file: %s", err.Error())
 	}
 
 	server := os.Getenv("DB_SERVER")

@@ -6,8 +6,15 @@ type Step struct {
 	Title     string `json:"title"`
 	Completed bool   `json:"is_completed"`
 }
-
-type NewStep struct {
+type CreateStep struct {
 	IDWish int    `json:"id_wish"`
 	Title  string `json:"title"`
+}
+
+type CreateStepRequest struct {
+	Title string `json:"title"`
+}
+type UpdateStepRequest struct {
+	Title     string `json:"title"`
+	Completed bool   `json:"is_completed"`
 }
