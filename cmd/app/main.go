@@ -2,12 +2,13 @@ package main
 
 import (
 	"WishForge/internal/handlers"
+	"WishForge/internal/middleware"
 	"fmt"
 	"net/http"
 
 	_ "WishForge/docs"
 
-	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5"
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
@@ -16,8 +17,11 @@ import (
 // @description     REST API for managing wishes and steps.
 // @BasePath        /
 func main() {
+	logger, err := middleware.CreateLogger()
 
 	r := chi.NewRouter()
+
+	r.Use(middleware.RequestLogger(logger))
 
 	r.Get("/swagger/*", httpSwagger.Handler())
 
@@ -43,7 +47,7 @@ func main() {
 		})
 	})
 
-	err := http.ListenAndServe(":8080", r)
+	err = http.ListenAndServe(":8080", r)
 
 	if err != nil {
 		fmt.Println(err)
