@@ -3,7 +3,9 @@ package main
 import (
 	"WishForge/internal/handlers"
 	"WishForge/internal/middleware"
-	"fmt"
+	"WishForge/migrations"
+	"log"
+	"log/slog"
 	"net/http"
 
 	_ "WishForge/docs"
@@ -18,7 +20,27 @@ import (
 // @BasePath        /
 func main() {
 	logger, err := middleware.CreateLogger()
+	if err != nil {
+		log.Print(err)
+		return
+	}
 
+	err = migrations.RunMigrations()
+	if err != nil {
+		logger.Error(err.Error())
+		return
+	}
+
+	r := settingUpRouter(logger)
+
+	err = http.ListenAndServe(":8080", r)
+
+	if err != nil {
+		logger.Error(err.Error())
+	}
+}
+
+func settingUpRouter(logger *slog.Logger) *chi.Mux {
 	r := chi.NewRouter()
 
 	r.Use(middleware.RequestLogger(logger))
@@ -47,9 +69,5 @@ func main() {
 		})
 	})
 
-	err = http.ListenAndServe(":8080", r)
-
-	if err != nil {
-		fmt.Println(err)
-	}
+	return r
 }

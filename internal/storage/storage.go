@@ -6,8 +6,7 @@ import (
 	"fmt"
 	"os"
 
-	_ "github.com/denisenkom/go-mssqldb"
-	"github.com/joho/godotenv"
+	_ "github.com/microsoft/go-mssqldb"
 )
 
 func GetWishes() ([]model.Wish, error) {
@@ -225,16 +224,13 @@ func DeleteStep(idWish int, idStep int) error {
 }
 
 func connectDataBase() (*sql.DB, error) {
-	err := godotenv.Load()
-	if err != nil {
-		return nil, fmt.Errorf("Error loading .env file: %s", err.Error())
-	}
-
-	server := os.Getenv("DB_SERVER")
+	server := os.Getenv("DB_HOST")
 	port := os.Getenv("DB_PORT")
+	user := os.Getenv("DB_USER")
+	password := os.Getenv("DB_PASSWORD")
 	database := os.Getenv("DB_NAME")
 
-	connString := fmt.Sprintf("sqlserver://@%s:%s?database=%s", server, port, database)
+	connString := fmt.Sprintf("server=%s;port=%s;user id=%s;password=%s;database=%s", server, port, user, password, database)
 
 	dataBase, err := sql.Open("sqlserver", connString)
 	if err != nil {
