@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5"
 )
 
 // GetWishes godoc
@@ -70,7 +70,7 @@ func PostWish(w http.ResponseWriter, r *http.Request) {
 // @Summary      Get wish
 // @Tags         wishes
 // @Produce      json
-// @Param        wishID path int true "Wish ID"
+// @Param        wishID path int true "wishID"
 // @Success      200 {object} model.Wish
 // @Failure      404 {object} model.Error
 // @Router       /wishes/{wishID} [get]
@@ -96,7 +96,7 @@ func GetWish(w http.ResponseWriter, r *http.Request) {
 //
 // @Summary      Delete a wish
 // @Tags         wishes
-// @Param        wishID path int true "Wish ID"
+// @Param        wishID path int true WishID"
 // @Success      200
 // @Failure      404 {object} model.Error
 // @Router       /wishes/{wishID} [delete]
@@ -120,7 +120,7 @@ func DeleteWish(w http.ResponseWriter, r *http.Request) {
 // @Tags         wishes
 // @Accept       json
 // @Produce      json
-// @Param        wishID path int true "Wish ID"
+// @Param        wishID path int true "WishID"
 // @Param        wish body model.UpdateWishRequest true "Wish"
 // @Success      200 {object} model.Wish
 // @Failure      400 {object} model.Error
@@ -166,7 +166,7 @@ func PatchWish(w http.ResponseWriter, r *http.Request) {
 //
 // @Summary      Getting all the steps for a wish
 // @Tags         steps
-// @Param        wishID path int true "Wish ID"
+// @Param        wishID path int true "WishID"
 // @Produce      json
 // @Success      200 {array} model.Step
 // @Failure      500 {object} model.Error
@@ -195,7 +195,7 @@ func GetSteps(w http.ResponseWriter, r *http.Request) {
 // @Tags         steps
 // @Accept       json
 // @Produce      json
-// @Param        wishID path int true "Wish ID"
+// @Param        wishID path int true "WishID"
 // @Param        wish body model.CreateStepRequest true "Step"
 // @Success      200 {object} model.Step
 // @Failure      400 {object} model.Error
@@ -241,8 +241,8 @@ func PostStep(w http.ResponseWriter, r *http.Request) {
 // @Tags         steps
 // @Accept       json
 // @Produce      json
-// @Param        wishID path int true "Wish ID"
-// @Param        stepID path int true "Step ID"
+// @Param        wishID path int true "WishID"
+// @Param        stepID path int true "StepID"
 // @Param        wish body model.UpdateStepRequest true "Step"
 // @Success      200 {object} model.Step
 // @Failure      400 {object} model.Error
@@ -295,8 +295,8 @@ func PatchStep(w http.ResponseWriter, r *http.Request) {
 //
 // @Summary      Delete a step
 // @Tags         steps
-// @Param        wishID path int true "Wish ID"
-// @Param        stepID path int true "Step ID"
+// @Param        wishID path int true "WishID"
+// @Param        stepID path int true "StepID"
 // @Success      200
 // @Failure      404 {object} model.Error
 // @Router       /wishes/{wishID}/steps/{stepID} [delete]
@@ -326,7 +326,7 @@ func DeleteStep(w http.ResponseWriter, r *http.Request) {
 // @Summary      Get progress
 // @Tags         progress
 // @Produce      json
-// @Param        wishID path int true "Wish ID"
+// @Param        wishID path int true "WishID"
 // @Success      200 {object} model.Progress
 // @Failure      404 {object} model.Error
 // @Router       /wishes/{wishID}/progress [get]
@@ -359,10 +359,5 @@ func sendJSON(w http.ResponseWriter, data any) {
 }
 func getID(r *http.Request, key string) (int, error) {
 	idStr := chi.URLParam(r, key)
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
-		return 0, err
-	}
-
-	return id, nil
+	return strconv.Atoi(idStr)
 }
